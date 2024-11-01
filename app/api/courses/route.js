@@ -3,9 +3,7 @@ import { NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
 
-export async function GET(request) {
-  const { searchParams } = new URL(request.url);
-
+export async function GET() {
   try {
     const jsonPath = path.join(process.cwd(), 'data', 'courses.json');
     const fileContents = fs.readFileSync(jsonPath, 'utf8');

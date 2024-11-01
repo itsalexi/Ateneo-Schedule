@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 'use client';
 
 import React, { useMemo, useState } from 'react';
@@ -12,7 +13,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 
-import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
+import { Dialog } from '@/components/ui/dialog';
 
 import { isTimeInRange, parseTimeRange } from '@/lib/helper';
 
@@ -83,7 +84,9 @@ export default function Calendar({
   filter: string;
 }) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [selectedCourse, setSelectedCourse] = useState<ScheduleBlock>([]);
+  const [selectedCourse, setSelectedCourse] = useState<ScheduleBlock | null>(
+    null
+  );
 
   function calculateTimeSlots(startTime: number, endTime: number): number {
     const toMinutes = (time: number) => {
@@ -194,7 +197,7 @@ export default function Calendar({
           const matchesFilter = filter
             ? course.catNo.toLowerCase().includes(filter.toLowerCase())
             : true;
-          const noOverlap = !isOverlapping(course, dayIndex, time);
+          const noOverlap = !isOverlapping(course, dayIndex);
           return matchesSlot && matchesFilter && noOverlap;
         });
         slots.set(slotKey, coursesInSlot);
