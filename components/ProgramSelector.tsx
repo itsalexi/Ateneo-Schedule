@@ -45,7 +45,7 @@ export default function ProgramSelector({
       setSelectedYear(null);
       setSelectedSemester(null);
     }
-  }, [selectedProgram]);
+  }, [selectedProgram, setFilter]);
 
   useEffect(() => {
     setCurriculum({ courses: selectedSemester?.courses || [] });
