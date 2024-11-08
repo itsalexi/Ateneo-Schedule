@@ -13,11 +13,17 @@ import {
   TableRow,
 } from '@/components/ui/table';
 
-import { Dialog } from '@/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 
 import { isTimeInRange, parseTimeRange } from '@/lib/helper';
 
 import CourseSearch from './CourseSearch';
+import { Button } from './ui/button';
 
 const timeSlots = Array.from({ length: 29 }, (_, i) => {
   const hour = Math.floor(i / 2) + 7;
@@ -87,6 +93,92 @@ export default function Calendar({
   const [selectedCourse, setSelectedCourse] = useState<ScheduleBlock | null>(
     null
   );
+  console.log(selectedCourse);
+  const colorCodes: { [key: string]: string } = {
+    ACCT: '#d0e3c1',
+    ANTH: '#bdb0e8',
+    ARTM: '#eca79f',
+    ARTS: '#d4e6c4',
+    ATMOS: '#d3c8ba',
+    ArtAp: '#eb8b88',
+    BIO: '#b5f5f4',
+    CEPP: '#eff88f',
+    CHEM: '#c3ffb4',
+    CHEMED: '#c2b298',
+    COMM: '#b7d3ff',
+    CPA: '#bbbef9',
+    CRWR: '#efdade',
+    CSCI: '#f6829c',
+    CSP: '#e5e2f4',
+    DECSC: '#95d9b9',
+    DECSCI: '#b1f0f3',
+    DEV: '#dff6ef',
+    DIRR: '#bdd2fe',
+    DLQ: '#e1dbe5',
+    ECON: '#c799ed',
+    EDUC: '#cec2e5',
+    ELM: '#f2c8d2',
+    ENE: '#b2fdd5',
+    ENGG: '#dfe6c2',
+    ENGL: '#d0cfec',
+    ENLIT: '#f5f6a7',
+    ENVI: '#8ab2f4',
+    EURO: '#fdb5f6',
+    FIL: '#fcf8f3',
+    FILI: '#e185b4',
+    FINN: '#c08af0',
+    FRE: '#bdc18c',
+    GDEV: '#99c881',
+    GER: '#8bed8b',
+    HISTO: '#bcc891',
+    HSCI: '#e09587',
+    HUMAN: '#d1b5b3',
+    IDES: '#82c5e9',
+    IDS: '#a1bcdd',
+    INTACT: '#b38e97',
+    ISCS: '#c7c6cd',
+    ITA: '#bea4fb',
+    ITENT: '#b3c383',
+    ITMGT: '#cf8589',
+    JPN: '#b98787',
+    KOR: '#84f0b2',
+    KRN: '#b2f7f2',
+    LAS: '#f8fad4',
+    LEAD: '#ecd1d8',
+    LLAW: '#e6ede0',
+    MATH: '#b2ab8c',
+    MATSE: '#80a0b9',
+    MEM: '#8bbfd4',
+    MKTG: '#edb4aa',
+    MSYS: '#f080f5',
+    MTHED: '#dd8888',
+    NSTP: '#a7e3a6',
+    OPMAN: '#9db8ec',
+    PEPC: '#b2f9ca',
+    PHILO: '#9c9fe4',
+    PHYED: '#d5fc7f',
+    PHYS: '#e6b6fb',
+    PHYSE: '#e8a9e8',
+    PNTKN: '#b4cbfc',
+    POLSC: '#a9f6b0',
+    PORT: '#a29d7f',
+    PSYC: '#8fa1b4',
+    QUANT: '#81e4a2',
+    RE: '#d6fb94',
+    RELED: '#f1a9c0',
+    RUSS: '#9ec7f7',
+    SCIED: '#b1c3d0',
+    SEAS: '#c6efe8',
+    SOAN: '#afc2bd',
+    SOCDV: '#eaa2bb',
+    SOCIO: '#fceaf0',
+    SOMGT: '#e2a9bc',
+    SPA: '#d4a48e',
+    STS: '#e58592',
+    SocSc: '#efde84',
+    THEO: '#fe9994',
+    THTR: '#a3f0fa',
+  };
 
   function calculateTimeSlots(startTime: number, endTime: number): number {
     const toMinutes = (time: number) => {
@@ -99,7 +191,6 @@ export default function Calendar({
     const endMinutes = toMinutes(endTime);
     const duration = endMinutes - startMinutes;
 
-    console.log(duration);
     return Math.ceil(duration / 30);
   }
 
@@ -178,7 +269,7 @@ export default function Calendar({
           startTime: number;
           endTime: number;
         };
-        const overlapDays = scheduledDays.has(day);
+        const overlapDays = scheduledDays?.has(day);
         const overlapTimes =
           startTime < scheduledEndTime && endTime > scheduledStartTime;
         return overlapDays && overlapTimes;
@@ -240,9 +331,20 @@ export default function Calendar({
                         scheduleBlock ? 'bg-primary/10' : ''
                       }`}
                       rowSpan={scheduleBlock?.rowspan}
+                      style={{
+                        backgroundColor: scheduleBlock
+                          ? colorCodes[
+                              scheduleBlock.course.catNo.split(
+                                ' '
+                              )[0] as keyof typeof colorCodes
+                            ]
+                          : '',
+                      }}
                       onClick={() => {
                         if (scheduleBlock) {
                           setSelectedCourse(scheduleBlock);
+                        } else {
+                          setSelectedCourse(null);
                         }
                         setIsDialogOpen(true);
                         setSelectedSlot({ day: index, time });
@@ -279,12 +381,48 @@ export default function Calendar({
         </Table>
 
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <CourseSearch
-            toggleCourse={toggleCourse}
-            courses={eligibleCourses}
-            setDialog={setIsDialogOpen}
-            setFilter={setFilter}
-          />
+          <DialogContent
+            className={`${
+              selectedCourse === null ? 'min-w-[90vw]' : 'w-full'
+            } max-h-[90vh] overflow-y-auto`}
+          >
+            {selectedCourse === null ? (
+              <CourseSearch
+                toggleCourse={toggleCourse}
+                courses={eligibleCourses}
+                setDialog={setIsDialogOpen}
+                setFilter={setFilter}
+              />
+            ) : (
+              <div>
+                <DialogHeader>
+                  <DialogTitle>
+                    {selectedCourse.course.catNo} ({selectedCourse.course.time})
+                  </DialogTitle>
+                </DialogHeader>
+                <p></p>
+                <div>{selectedCourse.course.courseTitle}</div>
+                <br />
+
+                <div>
+                  <strong>Instructor</strong>:{' '}
+                  {selectedCourse.course.instructor}
+                </div>
+                <div>
+                  <strong>Remarks</strong>: {selectedCourse.course.remarks}
+                </div>
+
+                <Button
+                  onClick={() => {
+                    toggleCourse(selectedCourse.course);
+                    setIsDialogOpen(false);
+                  }}
+                >
+                  Remove Class
+                </Button>
+              </div>
+            )}
+          </DialogContent>
         </Dialog>
       </div>
     </CardContent>

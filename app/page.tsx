@@ -10,6 +10,7 @@ import { Label } from '@/components/ui/label';
 import { parseTimeRange, isTimeInRange } from '@/lib/helper';
 import ProgramSelector from '@/components/ProgramSelector';
 import CourseFilterPanel from '@/components/CourseFilterPanel';
+import { Button } from '@/components/ui/button';
 
 export default function Home() {
   const [selectedCourses, setSelectedCourses] = useState<Course[]>([]);
@@ -37,6 +38,10 @@ export default function Home() {
         ? prev.filter((c) => c.catNo !== course.catNo)
         : [...prev, course]
     );
+  };
+
+  const clearScheduledCourses = () => {
+    setSelectedCourses([]);
   };
 
   const eligibleCourses = useMemo(() => {
@@ -70,19 +75,23 @@ export default function Home() {
     });
   }, [selectedSlot, selectedFilter, courses, selectedCourses]);
 
+  console.log(selectedFilter);
   return (
     <div className="p-4 flex">
       <div className="p-4 flex flex-col gap-5">
         <ProgramSelector
           className="flex flex-col gap-5"
           setCurriculum={setSelectedCurriculum}
+          setFilter={setSelectedFilter}
         />
         <CourseFilterPanel
           courses={selectedCurriculum?.courses || []}
           scheduledCourses={selectedCourses}
           setScheduledCourses={setSelectedCourses}
           setFilter={setSelectedFilter}
+          filter={selectedFilter}
         />
+        <Button onClick={clearScheduledCourses}>Clear Schedule</Button>
       </div>
       <div className="flex flex-1 flex-col p-4">
         <h1 className="text-2xl font-bold mb-4">Course Scheduler</h1>

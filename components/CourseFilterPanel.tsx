@@ -12,9 +12,11 @@ export default function CourseFilterPanel({
   scheduledCourses,
   setScheduledCourses,
   setFilter,
+  filter,
 }: {
   courses: CourseData[];
   scheduledCourses: Course[];
+  filter: string;
   setScheduledCourses: (courses: Course[]) => void;
   setFilter: (course: string) => void;
 }) {
@@ -47,12 +49,11 @@ export default function CourseFilterPanel({
 
   return (
     <Card className="w-full max-w-2xl mx-auto shadow-sm">
-      <CardHeader>
-        <CardTitle>Individual Program Of Study</CardTitle>
-      </CardHeader>
-      <CardContent>
+      <CardContent className="pt-6">
         <div className="space-y-6">
           <div>
+            <h3 className="text-lg font-semibold mb-2">Course List</h3>
+
             <ScrollArea className="h-full w-full rounded-md border">
               <div className="p-4">
                 {availableCourses?.map((course) => (
@@ -68,13 +69,16 @@ export default function CourseFilterPanel({
                     {course.courseTitle}
                   </Button>
                 ))}
+                {availableCourses.length === 0 && (
+                  <span>No program selected.</span>
+                )}
               </div>
             </ScrollArea>
           </div>
 
           <div>
             <h3 className="text-lg font-semibold mb-2">Current Filter</h3>
-            {selectedCourse ? (
+            {filter !== '' ? (
               <Badge variant="secondary" className="text-sm py-1 px-2">
                 {courses.find((c) => c.catNo === selectedCourse)?.catNo || ''}
                 <Button

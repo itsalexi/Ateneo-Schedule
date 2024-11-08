@@ -48,7 +48,7 @@ export default function CourseSearch({
   );
 
   return (
-    <DialogContent className="sm:max-w-[90vw] max-h-[90vh] overflow-y-auto">
+    <>
       <DialogHeader>
         <DialogTitle>Course List</DialogTitle>
       </DialogHeader>
@@ -69,41 +69,46 @@ export default function CourseSearch({
       </div>
       <div className="grid gap-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
         {paginatedCourses.map((course, index) => (
-          <Card key={index}>
+          <Card className="flex flex-col" key={index}>
             <CardHeader>
               <CardTitle>{course.courseTitle}</CardTitle>
             </CardHeader>
             <CardContent>
-              <p>
-                <strong>Cat No:</strong> {course.catNo}
-              </p>
-              <p>
-                <strong>Section:</strong> {course.section}
-              </p>
-              <p>
-                <strong>Units:</strong> {course.units}
-              </p>
-              <p>
-                <strong>Time:</strong> {course.time}
-              </p>
-              <p>
-                <strong>Room:</strong> {course.room}
-              </p>
-              <p>
-                <strong>Instructor:</strong> {course.instructor}
-              </p>
-              <p>
-                <strong>Remarks:</strong> {course.remarks}
-              </p>
-              <Button
-                onClick={() => {
-                  setDialog(false);
-                  setFilter('');
-                  toggleCourse(course);
-                }}
-              >
-                Add to Schedule
-              </Button>
+              <div className="flex flex-col">
+                <div>
+                  <p>
+                    <strong>Cat No:</strong> {course.catNo}
+                  </p>
+                  <p>
+                    <strong>Section:</strong> {course.section}
+                  </p>
+                  <p>
+                    <strong>Units:</strong> {course.units}
+                  </p>
+                  <p>
+                    <strong>Time:</strong> {course.time}
+                  </p>
+                  <p>
+                    <strong>Room:</strong> {course.room}
+                  </p>
+                  <p>
+                    <strong>Instructor:</strong> {course.instructor}
+                  </p>
+                  <p>
+                    <strong>Remarks:</strong> {course.remarks}
+                  </p>
+                </div>
+                <Button
+                  className="self-end"
+                  onClick={() => {
+                    setDialog(false);
+                    setFilter('');
+                    toggleCourse(course);
+                  }}
+                >
+                  Add to Schedule
+                </Button>
+              </div>
             </CardContent>
           </Card>
         ))}
@@ -144,6 +149,6 @@ export default function CourseSearch({
           </PaginationContent>
         </Pagination>
       )}
-    </DialogContent>
+    </>
   );
 }

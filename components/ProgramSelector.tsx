@@ -5,15 +5,17 @@ import { useEffect, useState } from 'react';
 export default function ProgramSelector({
   setCurriculum,
   className,
+  setFilter,
 }: {
   setCurriculum: (curriculum: { courses: CourseData[] }) => void;
+  setFilter: (course: string) => void;
   className: string;
 }) {
   const [programLabels, setProgramLabels] = useState([]);
   const [selectedProgram, setSelectedProgram] = useState<string | null>(null);
-  const [programData, setProgramData] = useState<ProgramData[]>([]);
+  const [programData, setProgramData] = useState<ProgramData[] | null>(null);
   const [selectedYear, setSelectedYear] = useState<Year | null>(null);
-  const [selectedSemester, setselectedSemester] = useState<Semester | null>(
+  const [selectedSemester, setSelectedSemester] = useState<Semester | null>(
     null
   );
 
@@ -31,6 +33,8 @@ export default function ProgramSelector({
   }, []);
 
   useEffect(() => {
+    setFilter('');
+    setProgramData(null);
     const fetchProgramData = async (program: string) => {
       const data = (await fetch(`/api/programs/?id=${program}`)).json();
       setProgramData(await data);
@@ -38,12 +42,15 @@ export default function ProgramSelector({
     };
     if (selectedProgram) {
       fetchProgramData(selectedProgram);
+      setSelectedYear(null);
+      setSelectedSemester(null);
     }
   }, [selectedProgram]);
 
   useEffect(() => {
     setCurriculum({ courses: selectedSemester?.courses || [] });
   }, [selectedSemester, setCurriculum]);
+
   return (
     <div className={className}>
       <Autocomplete
@@ -57,10 +64,10 @@ export default function ProgramSelector({
         )}
       ></Autocomplete>
 
-      {programData.length > 0 && (
+      {programData && programData.length > 0 && (
         <Autocomplete
           options={
-            programData.length > 0
+            programData?.length > 0
               ? programData[0].years.map((yearObj, index) => ({
                   year: yearObj.year,
                   label: `${yearObj.year} Year`,
@@ -71,14 +78,17 @@ export default function ProgramSelector({
           getOptionLabel={(option: YearOption) => option.label}
           onChange={(e, value) => {
             if (value) {
-              setSelectedYear(programData[0].years[value.index]);
+              setSelectedYear(null);
+              setTimeout(() => {
+                setSelectedYear(programData[0].years[value.index]);
+              }, 0);
             }
           }}
           renderInput={(params) => <TextField {...params} label="Year" />}
         />
       )}
 
-      {selectedYear && (
+      {programData && selectedYear && (
         <Autocomplete
           options={
             selectedYear !== null
@@ -91,7 +101,7 @@ export default function ProgramSelector({
           getOptionLabel={(option: SemesterOption) => option.label}
           onChange={(e, value) => {
             if (value) {
-              setselectedSemester(selectedYear.semesters[value.index]);
+              setSelectedSemester(selectedYear.semesters[value.index]);
             }
           }}
           renderInput={(params) => <TextField {...params} label="Semester" />}
